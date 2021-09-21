@@ -1,8 +1,11 @@
 # TCP Server for PvChat
 # Starts server in localhost and port 9999 by default
-
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 import socket
 import threading
+import argparse
+import sys
 
 def logsHandler():
     # checks if log file exist and creates one
@@ -24,12 +27,53 @@ def userdatabaseHandler():
         database = open('users.txt', 'x')
         return database
 
+def keyLoader(keyLocation):
+    try:
+        key = open(keyLocation, 'r')
+        return key
+    except FileNotFoundError:
+        print("[!] Error loading key.")
 
-logs = logsHandler()
-users_file = userdatabaseHandler()
+
+# UNCOMMENT THIS SECTION for database creation
+# logs = logsHandler()
+# users_file = userdatabaseHandler()
 
 # stores current clients connected to server
 active_users = []
+
+class Authentication():
+    """
+        Encryption, decryption and authentication with RSA
+    """
+
+    def __init__(self):
+        pass
+
+    def keyGenerator(self):
+        # Generates private and public keys
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048
+        )
+        public_key = private_key.public_key()
+
+        # Send to serialization
+        new_private_key, new_public_key = self.keySerialization(private_key, public_key)
+        return new_private_key, new_public_key
+
+
+    def keySerialization(self, private_key, public_key):
+
+        pem = private_key.private_bytes(encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption())
+
+        pub = public_key.public_bytes(encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+        return pem, pub
+
 
 class messageServer():
     """
@@ -47,16 +91,9 @@ class messageServer():
     def activeClients(self, client):
         if client not in active_users:
             active_users.append(client)
-        
-        print("Active users: ")
-        for i in active_users:
-            print("[*] " + str(i))
-        
-        print(active_users)
 
     # starts listener service
     def startClientListener(self):
-        print("Listening for clients...")
         while True:
             client, addr = self.server.accept()
             print(
@@ -82,7 +119,9 @@ class messageServer():
                     formatted_message = "{} says> {}".format(str(address[0]), data.decode())
                     print(formatted_message)
                     self.messageHandler(formatted_message)
-                    self.logMessage(formatted_message)
+
+                    # UNCOMMENT FOR LOG MESSAGING
+                    # self.logMessage(formatted_message)
                     
 
             except socket.error:
@@ -128,9 +167,32 @@ HOST, PORT = 'localhost', 9999
 
 
 if __name__ == '__main__':
+    # Start Command Line Parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--key', type=str, help='Private RSA key to start server.')
+    args = parser.parse_args()
+    
+    # Starts auth service
+    auth = Authentication()
+
+    # Checks if key was provided
+    if args.key:
+        key = keyLoader(args.key).read()
+    else:
+        print("No private key was provided.")
+        generateKey = input("Generate key? y/n\n> ")
+        if generateKey == 'y':
+            # Generates new keys
+            private_key, public_key = auth.keyGenerator()
+            print("This is your new private key: ")
+            print(private_key)
+            print()
+        else:
+            sys.exit(1)
+
+
 
     print("Initializing server on {}:{}".format(HOST, PORT))
-    print("\n Listening...\n")
 
     try:
         startServer = messageServer(HOST, PORT)
@@ -140,6 +202,3 @@ if __name__ == '__main__':
         startServer.exit()
         print("\n\nClosing connection...\n")
         print("Bye!")
-        
-
-

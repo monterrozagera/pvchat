@@ -8,9 +8,26 @@ import threading
 import time
 import cryptography # not yet used
 
+class Authentication():
+    """
+        RSA Generator and authenticator
+    """
+
+    def __init__(self):
+        pass
+
+    def loadKey(self):
+        pass
+
+    def verifyKey(self):
+        pass
+
+    def requestKey(self):
+        pass
+
 class Connection(threading.Thread):
     """
-        TCP Connections Handler
+        TCP ClientConnection Handler
     """
 
     def __init__(self, host, port):
