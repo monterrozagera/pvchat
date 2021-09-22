@@ -2,40 +2,9 @@
 # Starts server in localhost and port 9999 by default
 import messages_server
 import authentication
+import file_handler
 import argparse
 import sys
-
-def logsHandler():
-    # checks if log file exist and creates one
-    try:
-        logs = open('chat_logs.txt', 'r')
-        return logs
-    except FileNotFoundError:
-        print("\n[!] Logs don't exist. Creating log file..\n")
-        logs = open('chat_logs.txt', 'x')
-        return logs
-
-def userdatabaseHandler():
-    # checks for database
-    try:
-        database = open('users.txt', 'r')
-        return database
-    except FileNotFoundError:
-        print("[!] Database not found. Creating database..\n")
-        database = open('users.txt', 'x')
-        return database
-
-def keyLoader(keyLocation):
-    try:
-        key = open(keyLocation, 'r')
-        return key
-    except FileNotFoundError:
-        print("[!] Error loading key.")
-
-
-# UNCOMMENT THIS SECTION for database creation
-# logs = logsHandler()
-# users_file = userdatabaseHandler()
 
 # IP and PORT
 HOST, PORT = 'localhost', 9999
@@ -52,7 +21,7 @@ if __name__ == '__main__':
 
     # Checks if key was provided
     if args.key:
-        key = keyLoader(args.key).read()
+        key = file_handler.Files.keyLoader(args.key).read()
     else:
         print("No private key was provided.")
         generateKey = input("Generate key? y/n\n> ")

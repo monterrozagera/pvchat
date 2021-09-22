@@ -33,3 +33,6 @@ class Authentication():
             format=serialization.PublicFormat.SubjectPublicKeyInfo)
 
         return pem, pub
+
+    def authenticateKey(self):
+        pass
