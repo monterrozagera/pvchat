@@ -1,30 +1,13 @@
 # TCP Client for PvChat
 # Starts connecting to a server on localhost and port 9999 by default
 # will accept input to send and receive messages upon execution
-import file_handler
+from os import times
 import authentication
 import socket
 import sys
 import threading
 import time
-import argparse # not yet used
-
-class Authentication():
-    """
-        RSA Generator and authenticator
-    """
-
-    def __init__(self):
-        pass
-
-    def loadKey(self):
-        pass
-
-    def verifyKey(self):
-        pass
-
-    def requestKey(self):
-        pass
+import argparse
 
 class Connection(threading.Thread):
     """
@@ -105,12 +88,12 @@ class Connection(threading.Thread):
 HOST, PORT = 'localhost', 9999
 
 
-connected = Connection(HOST, PORT)
+# connected = Connection(HOST, PORT)
 
-if __name__ == '__init__':
+if __name__ == '__main__':
     # Start Command Line Parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('--key', type=str, help='Private RSA key to start server.')
+    parser.add_argument('--key', type=str, help='Private RSA key.')
     args = parser.parse_args()
     
     # Starts auth service
@@ -118,24 +101,34 @@ if __name__ == '__init__':
 
     # Checks if key was provided
     if args.key:
-        key = file_handler.Files.keyLoader(args.key).read()
+        print("Loading private key..")
+        private_key = auth.keyLoader(args.k1)
+        time.sleep(1)
+
+        print("Creating public key..")
+        public_key = auth.publicKeyGenerator(private_key)
     else:
-        print("No private key was provided.")
+        print("No keys were provided.")
         generateKey = input("Generate key? y/n\n> ")
         if generateKey == 'y':
             # Generates new keys
-            private_key, public_key = auth.keyGenerator()
+            private_key, public_key = auth.privateKeyGenerator()
             print("This is your new private key: ")
             print(private_key)
             print()
+            print(public_key)
+            print()
+            print("Exporting them as private.pem and public.pem..")
+            time.sleep(4)
+            print("Success")
         else:
             sys.exit(1)
 
-try:
-    connected.run()
-except KeyboardInterrupt:
-    print("Logged out.")
-    time.sleep(1)
-    print("Exiting..")
-    time.sleep(2)
-    sys.exit()
+    # try:
+        # connected.run()
+    # except KeyboardInterrupt:
+        # print("Logged out.")
+        # time.sleep(1)
+        # print("Exiting..")
+        # time.sleep(2)
+        # sys.exit()
