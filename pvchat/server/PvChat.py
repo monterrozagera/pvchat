@@ -1,7 +1,10 @@
 # TCP Server for PvChat
 # Starts server in localhost and port 9999 by default
+import server_authentication
 import messages_server
 import argparse
+import time
+import sys
 
 # IP and PORT
 HOST, PORT = 'localhost', 9999
@@ -10,14 +13,24 @@ HOST, PORT = 'localhost', 9999
 if __name__ == '__main__':
     # Start Command Line Parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('--start', type=str, help='Private RSA key to start server.')
+    parser.add_argument('--key', type=str, help='Private RSA key to start server.')
     args = parser.parse_args()
-
 
     print("Initializing server on {}:{}".format(HOST, PORT))
 
+    # start auth service
+    auth = server_authentication.Authentication()
+
+    if args.key:
+        print("Loading key..")
+        private_key = auth.loadKey(args.key)
+        time.sleep(2)
+    else:
+        print("No key provided.")
+        sys.exit(0)
+
     try:
-        startServer = messages_server.messageServer(HOST, PORT)
+        startServer = messages_server.messageServer(HOST, PORT, private_key)
         startServer.startClientListener()
     except KeyboardInterrupt:
         # closes connection and exits

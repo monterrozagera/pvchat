@@ -1,17 +1,20 @@
 import socket
 import threading
+import server_authentication
 
 class messageServer():
     """
         Implements communications between clients.
     """
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, key):
         self.host = host
         self.port = port
+        self.key = key
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host, self.port))
         self.server.listen(5)
+        self.auth = server_authentication.Authentication()
 
     # appends and prints active clients
     def activeClients(self, client):
@@ -31,12 +34,20 @@ class messageServer():
     # handles and create individual processes for clients
     def handleClient(self, client_socket, address):
         size = 1024
+        authenticated = False
         while True:
             try:
                 # recieve messages from clients
                 data = client_socket.recv(size)
                 # close communication if exit code is received
-                if 'exit' in data.decode():
+                if authenticated == False:
+                    if self.authenticateClient(data):
+                        print("Client: {} successfully authenticated!".format(address[0]))
+                        client_socket.sendall(bytes('[PASS]', 'utf-8'))
+                        authenticated = True
+                    else:
+                        print("ERROR AUTHENTICATING NEW CLIENT")
+                elif 'exit' in data.decode():
                     print("{}:{} is exiting the room".format(address[0], address[1]))
                     client_socket.close()
                     break
@@ -44,7 +55,7 @@ class messageServer():
                     # print message in server console
                     formatted_message = "{} says> {}".format(str(address[0]), data.decode())
                     print(formatted_message)
-                    self.messageHandler(formatted_message)
+                    self.messageHandler(data.decode())
 
                     # UNCOMMENT FOR LOG MESSAGING
                     # self.logMessage(formatted_message)
@@ -83,6 +94,19 @@ class messageServer():
                 print("Done.")
                 self.registerUser(client)
                 return True
+
+    def authenticateClient(self, request):
+        encrypted_request = request
+        decrypted_request = self.auth.decryptMessage(self.key, encrypted_request)
+
+        print(decrypted_request)
+
+        if str(decrypted_request) == "b'[SERVER-AUTH-REQUEST]'":
+            print('ready')
+            return True
+        else: 
+            print("not ready")
+            return False
 
     def exit(self):
         self.server.close()
