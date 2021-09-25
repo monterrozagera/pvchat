@@ -14,6 +14,7 @@ if __name__ == '__main__':
     # Start Command Line Parser
     parser = argparse.ArgumentParser()
     parser.add_argument('--key', type=str, help='Private Fernet key.')
+    parser.add_argument('--user', type=str, help='Username to use.')
     args = parser.parse_args()
     
     # Starts auth service
@@ -29,9 +30,16 @@ if __name__ == '__main__':
     else:
         print("No key was provided.")
 
+    if args.user:
+        user_name = args.user
+    else:
+        user_name = 'anonymous'
+
+    print("\nLogged in as: {}\n".format(user_name))
+
     try:
         print("Connecting to {}:{}".format(HOST, PORT))
-        connected = client_connect.Connection(HOST, PORT, private_key)
+        connected = client_connect.Connection(HOST, PORT, user_name, private_key)
         connected.run()
     except KeyboardInterrupt:
         print("Logged out.")

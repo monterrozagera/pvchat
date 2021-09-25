@@ -2,17 +2,19 @@ import authentication
 import threading
 import socket
 import sys
+import re
 
 class Connection(threading.Thread):
     """
         TCP ClientConnection Handler
     """
 
-    def __init__(self, host, port, key):
+    def __init__(self, host, port, user_name, key):
         threading.Thread.__init__(self)
         # connection variables
         self.host = host
         self.port = port
+        self.user_name = user_name
         self.key = key
         self.client_authenticated = False
         self.auth = authentication.Authentication()
@@ -39,7 +41,8 @@ class Connection(threading.Thread):
                         loaded = True
 
                     messageSend = input()
-                    encryptedMessage = self.encryptMessage(messageSend)
+                    formated_message = "#{}>{}".format(self.user_name, messageSend)
+                    encryptedMessage = self.encryptMessage(formated_message)
 
                     # delete previous row for clean up
                     print("\033[A                             \033[A")
@@ -83,7 +86,10 @@ class Connection(threading.Thread):
                         print('AUTHENTICATED NICE!')
                 elif message != '':
                     decrypted_message = self.auth.decryptMessage(self.key, message)
-                    print("\033[44;33mfrom server>\033[m" + decrypted_message.decode())    
+                    user_nameFormat = re.findall("#.*>", decrypted_message.decode())
+                    messageFormat = re.sub("#.*>", "", decrypted_message.decode())
+
+                    print("\033[44;33m{}\033[m {}".format(user_nameFormat[0], messageFormat))    
                 
         except (socket.timeout, KeyboardInterrupt) as e:
             pass
