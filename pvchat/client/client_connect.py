@@ -30,8 +30,14 @@ class Connection(threading.Thread):
     def messageSender(self):
         try:
             alive = True
+            loaded = False
             while alive == True:
                 if self.client_authenticated:
+                    
+                    if loaded == False:
+                        print('\nFully loaded. Type your message below:')
+                        loaded = True
+
                     messageSend = input()
                     encryptedMessage = self.encryptMessage(messageSend)
 
@@ -51,13 +57,14 @@ class Connection(threading.Thread):
             authenticating = 0
             while True:
                 if start < 1:
-                    print("Okay listener running..")
+                    print("Listener [OK]")
                     start += 1
 
                 message = ''
 
                 if self.client_authenticated == False:
                     if authenticating < 1:
+                        print("Sending authentication request to server..")
                         request = self.authenticateToServer()
                         self.sock.sendall(request)
                         authenticating += 1
@@ -71,7 +78,7 @@ class Connection(threading.Thread):
                 # if message is received, print message
                 if self.client_authenticated == False:
                     if message.decode() == '[PASS]':
-                        print('Fully authenticated!')
+                        print()
                         self.client_authenticated = True
                         print('AUTHENTICATED NICE!')
                 elif message != '':

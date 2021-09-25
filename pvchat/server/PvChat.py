@@ -25,6 +25,7 @@ if __name__ == '__main__':
         print("Loading key..")
         private_key = auth.loadKey(args.key)
         time.sleep(2)
+        print("OK!")
     else:
         print("No key provided.")
         sys.exit(0)

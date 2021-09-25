@@ -24,11 +24,13 @@ if __name__ == '__main__':
         print("Loading key..")
         private_key = auth.loadKey(args.key)
         time.sleep(1)
+        print("OK!")
         print(private_key)
     else:
         print("No key was provided.")
 
     try:
+        print("Connecting to {}:{}".format(HOST, PORT))
         connected = client_connect.Connection(HOST, PORT, private_key)
         connected.run()
     except KeyboardInterrupt:
