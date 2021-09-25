@@ -33,7 +33,7 @@ class Connection(threading.Thread):
             loaded = False
             while alive == True:
                 if self.client_authenticated:
-                    
+
                     if loaded == False:
                         print('\nFully loaded. Type your message below:')
                         loaded = True
@@ -83,7 +83,7 @@ class Connection(threading.Thread):
                         print('AUTHENTICATED NICE!')
                 elif message != '':
                     decrypted_message = self.auth.decryptMessage(self.key, message)
-                    print("from server>" + decrypted_message.decode())    
+                    print("\033[44;33mfrom server>\033[m" + decrypted_message.decode())    
                 
         except (socket.timeout, KeyboardInterrupt) as e:
             pass

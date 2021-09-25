@@ -16,11 +16,12 @@ class Authentication():
 
     def generateKey(self):
         new_key = Fernet.generate_key()
-        return new_key
+        self.exportKey(new_key.decode())
+        return new_key.decode()
 
     def exportKey(self, key):
-        with open("new_key.key", "w") as exported_key:
-            exported_key.write(str(key)) 
+         with open("new_key.key", "w") as exported_key:
+            exported_key.write(key) 
 
     def encryptMessage(self, key, message):
         k = Fernet(key)

@@ -28,7 +28,15 @@ if __name__ == '__main__':
         print("OK!")
     else:
         print("No key provided.")
-        sys.exit(0)
+        print()
+        generate_key = input("Generate key? y/n\n")
+        if generate_key == 'y':
+            new_key = auth.generateKey()
+            print()
+            print("New key generated! Now load it with the --key arg.")
+            sys.exit(0)
+        else:
+            sys.exit(0)
 
     try:
         startServer = messages_server.messageServer(HOST, PORT, private_key)
