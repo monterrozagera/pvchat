@@ -6,7 +6,7 @@ What works right now?
 * Client connection to server
 * Server message forwarding
 * Encryption/Decryption between clients
-* Basic functionalities
+* Usernames
 
 Usage:
 
@@ -17,7 +17,7 @@ python3 PvChat.py --key *your_key*
 
 Then client:
 ```
-python3 PvChatClient.py --key *your_key*
+python3 PvChatClient.py --key *your_key* --user *your_username*
 ```
 
 Client will first authenticate with server, start message listener and input will accept messages to send.
