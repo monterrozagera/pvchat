@@ -1,5 +1,7 @@
+import random
 import authentication
 import threading
+import random
 import socket
 import sys
 import re
@@ -16,6 +18,7 @@ class Connection(threading.Thread):
         self.port = port
         self.user_name = user_name
         self.key = key
+        self.active_users = {user_name: self.colorGen()}
         self.client_authenticated = False
         self.auth = authentication.Authentication()
         # connect to socket
@@ -37,7 +40,7 @@ class Connection(threading.Thread):
                 if self.client_authenticated:
 
                     if loaded == False:
-                        print('\nFully loaded. Type your message below:')
+                        print('\n[!] Fully loaded. Type your message below:\n')
                         loaded = True
 
                     messageSend = input()
@@ -60,14 +63,14 @@ class Connection(threading.Thread):
             authenticating = 0
             while True:
                 if start < 1:
-                    print("Listener [OK]")
+                    print("[!] Listener OK")
                     start += 1
 
                 message = ''
 
                 if self.client_authenticated == False:
                     if authenticating < 1:
-                        print("Sending authentication request to server..")
+                        print("[*] Sending authentication request to server..")
                         request = self.authenticateToServer()
                         self.sock.sendall(request)
                         authenticating += 1
@@ -83,13 +86,18 @@ class Connection(threading.Thread):
                     if message.decode() == '[PASS]':
                         print()
                         self.client_authenticated = True
-                        print('AUTHENTICATED NICE!')
+                        print('[!] AUTHENTICATED NICE!')
                 elif message != '':
                     decrypted_message = self.auth.decryptMessage(self.key, message)
                     user_nameFormat = re.findall("#.*>", decrypted_message.decode())
-                    messageFormat = re.sub("#.*>", "", decrypted_message.decode())
 
-                    print("\033[44;33m{}\033[m {}".format(user_nameFormat[0], messageFormat))    
+                    if str(user_nameFormat) not in self.active_users:
+                        self.active_users[str(user_nameFormat)]=self.colorGen()
+
+                    messageFormat = re.sub("#.*>", "", decrypted_message.decode())
+                    user_nameColor = self.active_users[str(user_nameFormat)]
+
+                    print("\033[4{};3{}m{}\033[m {}".format(user_nameColor[0], user_nameColor[1], user_nameFormat[0], messageFormat))    
                 
         except (socket.timeout, KeyboardInterrupt) as e:
             pass
@@ -107,6 +115,13 @@ class Connection(threading.Thread):
         encrypted_request = self.auth.encryptMessage(self.key, request)
         return encrypted_request
 
+    def colorGen(self):
+        rand1 = random.randrange(1, 8)
+        rand2 = random.randrange(0, 8)
+        color_list = str(rand1) + str(rand2)
+        return color_list
+
+
     def logOut(self):
         # tried going around the lock error
         threading.Lock.release()
@@ -114,3 +129,4 @@ class Connection(threading.Thread):
         self.sock.shutdown(1)
         self.sock.close()
         sys.exit(0)
+

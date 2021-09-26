@@ -7,6 +7,13 @@ import sys
 import time
 import argparse
 
+logo = """██████╗ ██╗   ██╗ ██████╗██╗  ██╗ █████╗ ████████╗
+██╔══██╗██║   ██║██╔════╝██║  ██║██╔══██╗╚══██╔══╝
+██████╔╝██║   ██║██║     ███████║███████║   ██║   
+██╔═══╝ ╚██╗ ██╔╝██║     ██╔══██║██╔══██║   ██║   
+██║      ╚████╔╝ ╚██████╗██║  ██║██║  ██║   ██║   
+╚═╝       ╚═══╝   ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝  """
+
 
 HOST, PORT = 'localhost', 9999
 
@@ -16,29 +23,31 @@ if __name__ == '__main__':
     parser.add_argument('--key', type=str, help='Private Fernet key.')
     parser.add_argument('--user', type=str, help='Username to use.')
     args = parser.parse_args()
+
+    print(logo)
     
     # Starts auth service
     auth = authentication.Authentication()
 
     # Checks if key was provided
     if args.key:
-        print("Loading key..")
+        print("[*] Loading key..")
         private_key = auth.loadKey(args.key)
         time.sleep(1)
-        print("OK!")
+        print("[!] OK!")
         print(private_key)
     else:
-        print("No key was provided.")
+        print("[!] No key was provided.")
 
     if args.user:
         user_name = args.user
     else:
         user_name = 'anonymous'
 
-    print("\nLogged in as: {}\n".format(user_name))
+    print("\n[!] Logged in as: {}\n".format(user_name))
 
     try:
-        print("Connecting to {}:{}".format(HOST, PORT))
+        print("[!] Connecting to {}:{}".format(HOST, PORT))
         connected = client_connect.Connection(HOST, PORT, user_name, private_key)
         connected.run()
     except KeyboardInterrupt:
