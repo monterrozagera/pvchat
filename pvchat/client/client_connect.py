@@ -1,8 +1,8 @@
-import random
 import authentication
 import threading
 import random
 import socket
+import time
 import sys
 import re
 
@@ -80,13 +80,24 @@ class Connection(threading.Thread):
                     message = self.sock.recv(1024)
                 except (socket.timeout, OSError) as e:
                     pass
-
+                
+                trying = True
                 # if message is received, print message
                 if self.client_authenticated == False:
-                    if message.decode() == '[PASS]':
-                        print()
-                        self.client_authenticated = True
-                        print('[!] AUTHENTICATED NICE!')
+                    while trying == True:
+                        try:
+                            if message.decode() == '[PASS]' or message == '[PASS]':
+                                print()
+                                self.client_authenticated = True
+                                print('[!] AUTHENTICATED NICE!')
+                                trying = False
+                        except AttributeError:
+                            time.sleep(2)
+                            try:
+                                message = self.sock.recv(1024)
+                            except (socket.timeout, OSError) as e:
+                                pass
+
                 elif message != '':
                     decrypted_message = self.auth.decryptMessage(self.key, message)
                     user_nameFormat = re.findall("#.*>", decrypted_message.decode())
