@@ -111,7 +111,8 @@ class Connection(threading.Thread):
                     print("\033[4{};3{}m{}\033[m {}".format(user_nameColor[0], user_nameColor[1], user_nameFormat[0], messageFormat))    
                 
         except (socket.timeout, KeyboardInterrupt) as e:
-            pass
+            self.logOut()
+            sys.exit(0)
     
     def startListener(self):
         # start listener thread
@@ -129,6 +130,14 @@ class Connection(threading.Thread):
     def colorGen(self):
         rand1 = random.randrange(1, 8)
         rand2 = random.randrange(0, 8)
+
+        while True:
+            if rand1 == rand2:
+                rand1 = random.randrange(1, 8)
+                rand2 = random.randrange(0, 8)
+            elif rand1 != rand2:
+                break
+
         color_list = str(rand1) + str(rand2)
         return color_list
 

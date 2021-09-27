@@ -15,7 +15,7 @@ logo = """██████╗ ██╗   ██╗ ██████╗█�
 ╚═╝       ╚═══╝   ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝  """
 
 
-HOST, PORT = '192.168.1.110', 9999
+HOST, PORT = 'localhost', 9999
 
 if __name__ == '__main__':
     # Start Command Line Parser
@@ -37,7 +37,11 @@ if __name__ == '__main__':
         print("[!] OK!")
         print(private_key)
     else:
+        print()
         print("[!] No key was provided.")
+        time.sleep(0.5)
+        print("[*] Please generate with server and load key with '--key' arg.")
+        sys.exit(0)
 
     if args.user:
         user_name = args.user
