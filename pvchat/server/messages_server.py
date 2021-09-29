@@ -39,8 +39,9 @@ class messageServer():
             try:
                 # recieve messages from clients
                 data = client_socket.recv(size)
+                print(data.decode())
                 # close communication if exit code is received
-                if authenticated == False:
+                if not authenticated:
                     if self.authenticateClient(data):
                         print("Client: {} successfully authenticated!".format(address[0]))
                         client_socket.sendall(bytes('[PASS]', 'utf-8'))

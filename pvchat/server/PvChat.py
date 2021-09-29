@@ -37,6 +37,7 @@ if __name__ == '__main__':
 
     if args.key:
         print("[*] Loading key..")
+        # if key was provided, will load to private_key var
         private_key = auth.loadKey(args.key)
         time.sleep(2)
         print("[!] OK")
@@ -45,6 +46,7 @@ if __name__ == '__main__':
         print()
         generate_key = input("[*] Generate key? y/n\n")
         if generate_key == 'y':
+            # generate key
             new_key = auth.generateKey()
             print()
             print("[!] New key generated! Now load it with the --key arg.")
@@ -53,6 +55,7 @@ if __name__ == '__main__':
             sys.exit(0)
 
     try:
+        # start server
         startServer = messages_server.messageServer(HOST, PORT, private_key)
         startServer.startClientListener()
     except KeyboardInterrupt:

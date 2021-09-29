@@ -37,6 +37,7 @@ if __name__ == '__main__':
         print("[!] OK!")
         print(private_key)
     else:
+        # will not start without key, need to be generated using the server first
         print()
         print("[!] No key was provided.")
         time.sleep(0.5)
@@ -44,6 +45,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if args.user:
+        # assign user if provided
         user_name = args.user
     else:
         user_name = 'anonymous'
@@ -52,6 +54,7 @@ if __name__ == '__main__':
 
     try:
         print("[!] Connecting to {}:{}".format(HOST, PORT))
+        # start client
         connected = client_connect.Connection(HOST, PORT, user_name, private_key)
         connected.run()
     except KeyboardInterrupt:

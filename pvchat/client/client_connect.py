@@ -13,18 +13,26 @@ class Connection(threading.Thread):
 
     def __init__(self, host, port, user_name, key):
         threading.Thread.__init__(self)
+
         # connection variables
         self.host = host
         self.port = port
         self.user_name = user_name
         self.key = key
+
+        # color generator
         self.active_users = {user_name: self.colorGen()}
         self.client_authenticated = False
+
+        # client authenticator
         self.auth = authentication.Authentication()
+
         # connect to socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.host, self.port))
         self.sock.settimeout(.1)
+        
+        # listener and messanger thread
         self.startListener()
         self.startMessenger()
         
@@ -34,6 +42,7 @@ class Connection(threading.Thread):
 
     def messageSender(self):
         try:
+
             alive = True
             loaded = False
             while alive == True:
@@ -50,10 +59,15 @@ class Connection(threading.Thread):
                     # delete previous row for clean up
                     print("\033[A                             \033[A")
                     if messageSend == 'exit':
-                        self.logOut()   
+                        alive = False  
+                        self.logOut()
+                
                     self.sock.sendall(encryptedMessage)
         
         except KeyboardInterrupt:
+            self.logOut()
+
+        finally:
             self.logOut()
 
     def messageListener(self):
@@ -110,7 +124,7 @@ class Connection(threading.Thread):
 
                     print("\033[4{};3{}m{}\033[m {}".format(user_nameColor[0], user_nameColor[1], user_nameFormat[0], messageFormat))    
                 
-        except (socket.timeout, KeyboardInterrupt) as e:
+        except socket.timeout:
             self.logOut()
             sys.exit(0)
     
@@ -144,7 +158,6 @@ class Connection(threading.Thread):
 
     def logOut(self):
         # tried going around the lock error
-        threading.Lock.release()
         self.sock.sendall(bytes('exit', "utf-8"))
         self.sock.shutdown(1)
         self.sock.close()
