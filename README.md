@@ -7,7 +7,7 @@ What works right now?
 * Client connection to server
 * Server message forwarding
 * Fernet Encryption/Decryption between clients
-* Usernames
+* Usernames with color
 
 Usage:
 
