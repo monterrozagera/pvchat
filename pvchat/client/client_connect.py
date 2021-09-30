@@ -29,6 +29,8 @@ class Connection(threading.Thread):
 
         # connect to socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # self.sock.bind(('localhost', 9999))
         self.sock.connect((self.host, self.port))
         self.sock.settimeout(.1)
         

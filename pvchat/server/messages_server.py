@@ -6,7 +6,7 @@ class messageServer():
     """
         Implements communications between clients.
     """
-
+    
     def __init__(self, host, port, key):
         self.host = host
         self.port = port
@@ -60,7 +60,6 @@ class messageServer():
 
                     # UNCOMMENT FOR LOG MESSAGING
                     # self.logMessage(formatted_message)
-                    
 
             except socket.error:
                 client_socket.close()
