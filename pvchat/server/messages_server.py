@@ -102,10 +102,8 @@ class messageServer():
         print(decrypted_request)
 
         if str(decrypted_request) == "b'[SERVER-AUTH-REQUEST]'" or "[SERVER-AUTH-REQUEST]":
-            print('ready')
             return True
         else: 
-            print("not ready")
             return False
 
     def exit(self):

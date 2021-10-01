@@ -50,7 +50,7 @@ class Connection(threading.Thread):
             while alive == True:
                 if self.client_authenticated:
 
-                    if loaded == False:
+                    if not loaded:
                         print('\n[!] Fully loaded. Type your message below:\n')
                         loaded = True
 
@@ -84,7 +84,7 @@ class Connection(threading.Thread):
 
                 message = ''
 
-                if self.client_authenticated == False:
+                if not self.client_authenticated:
                     if authenticating < 1:
                         print("[*] Sending authentication request to server..")
                         request = self.authenticateToServer()
@@ -99,7 +99,7 @@ class Connection(threading.Thread):
                 
                 trying = True
                 # if message is received, print message
-                if self.client_authenticated == False:
+                if not self.client_authenticated:
                     while trying == True:
                         try:
                             if message.decode() == '[PASS]' or message == '[PASS]':
