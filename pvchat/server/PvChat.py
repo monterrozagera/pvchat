@@ -24,7 +24,7 @@ HOST, PORT = 'localhost', 9999
 if __name__ == '__main__':
     # Start Command Line Parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('--key', type=str, help='Private RSA key to start server.')
+    parser.add_argument('--key', type=str, help='Private Fernet key to start server.')
     args = parser.parse_args()
     print()
     print(logo)
